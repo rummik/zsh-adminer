@@ -1,12 +1,14 @@
 #!/bin/zsh
-ZSH_ADMINER=${0:h}
+if [[ ! -e ~/.zsh-adminer ]]; then
+	ln -s ${0:h} ~/.zsh-adminer
+fi
 
 function adminer {
 	emulate -L zsh
 	local php
 	local port=$((9100 + (RANDOM % 100)))
 	local pwd=$(pwd)
-	cd $ZSH_ADMINER
+	cd ~/.zsh-adminer
 
 	(php5 -S localhost:$port 2>&1 >/dev/null & print $!) > /tmp/php.$$.pid
 	php=$(</tmp/php.$$.pid)
@@ -14,7 +16,7 @@ function adminer {
 
 	sleep 1
 
-	HOME=$ZSH_ADMINER links2 -aggressive-cache 0 -format-cache-size 0 http://localhost:$port
+	HOME=~/.zsh-adminer links2 -aggressive-cache 0 -format-cache-size 0 http://localhost:$port
 
 	(kill -9 $php 2>&1) >/dev/null
 	cd $pwd
